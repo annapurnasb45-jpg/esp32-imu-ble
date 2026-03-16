@@ -21,23 +21,16 @@
 
 #define TAG "IMU_EVENT"
 
-/* =========================================================
- * BLE CONFIG
- * ========================================================= */
+
 #define DEVICE_NAME        "ESP32_IMU_EVENT_V2"
 #define GATTS_APP_ID       0
 #define LOCAL_MTU          247
 #define GATTS_NUM_HANDLE   8
 
-/* =========================================================
- * BUTTON CONFIG
- * BOOT button on most ESP32 dev boards
- * ========================================================= */
+
 #define BUTTON_PIN         GPIO_NUM_0
 
-/* =========================================================
- * EVENT TYPE CODES
- * ========================================================= */
+
 #define EVENT_LIFT         0x01
 #define EVENT_TILT         0x02
 #define EVENT_ROTATE       0x03
@@ -46,9 +39,6 @@
 #define EVENT_DOUBLE_TAP   0x06
 #define EVENT_FREEFALL     0x07
 
-/* =========================================================
- * UUIDs
- * ========================================================= */
 static uint8_t service_uuid[16] = {
     0x23,0xD1,0xBC,0xEA,0x5F,0x78,0x23,0x15,
     0xDE,0xEF,0x12,0x12,0x30,0x15,0x00,0x00
@@ -64,9 +54,7 @@ static uint8_t imu_uuid[16] = {
     0xDE,0xEF,0x12,0x12,0x32,0x15,0x00,0x00
 };
 
-/* =========================================================
- * HANDLES / CONNECTION STATE
- * ========================================================= */
+
 static uint16_t service_handle    = 0;
 static uint16_t event_char_handle = 0;
 static uint16_t imu_char_handle   = 0;
@@ -81,9 +69,7 @@ static bool event_notify_enabled = false;
 static bool imu_notify_enabled = false;
 static uint16_t negotiated_mtu = 23;
 
-/* =========================================================
- * GATT BUILD STATE
- * ========================================================= */
+
 typedef enum {
     STEP_IDLE = 0,
     STEP_ADD_EVENT_CHAR,
@@ -95,9 +81,7 @@ typedef enum {
 
 static gatt_build_step_t gatt_step = STEP_IDLE;
 
-/* =========================================================
- * ADVERTISING
- * ========================================================= */
+
 static esp_ble_adv_data_t adv_data = {
     .set_scan_rsp = false,
     .include_name = true,
@@ -123,12 +107,7 @@ static esp_ble_adv_params_t adv_params = {
     .adv_filter_policy = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY
 };
 
-/* =========================================================
- * ASSIGNMENT PAYLOAD CONFIG
- * 200 Hz * 12 bytes * 2 sec = 4800 bytes
- * ATT payload with MTU 247 => 244 bytes max
- * 2 bytes sequence + 242 bytes data
- * ========================================================= */
+
 #define SAMPLE_RATE_HZ          200
 #define SAMPLE_BYTES            12
 #define DURATION_SECONDS        2
@@ -141,9 +120,7 @@ static esp_ble_adv_params_t adv_params = {
 
 static uint8_t dummy_imu_data[TOTAL_IMU_BYTES];
 
-/* =========================================================
- * HELPERS
- * ========================================================= */
+
 static void start_advertising_if_ready(void)
 {
     if (adv_config_done == (ADV_CONFIG_FLAG | SCAN_RSP_CONFIG_FLAG)) {
@@ -168,9 +145,9 @@ static void fill_dummy_imu_data(void)
     }
 }
 
-/* =========================================================
- * GATT BUILD FUNCTIONS
- * ========================================================= */
+
+ // GATT BUILD FUNCTIONS
+ 
 static void add_event_char(void)
 {
     esp_bt_uuid_t uuid = {0};
@@ -257,9 +234,8 @@ static void add_imu_cccd(void)
     }
 }
 
-/* =========================================================
- * GAP HANDLER
- * ========================================================= */
+// GAP HANDLER
+
 static void gap_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
     switch (event) {
@@ -287,9 +263,8 @@ static void gap_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *pa
     }
 }
 
-/* =========================================================
- * GATTS HANDLER
- * ========================================================= */
+// GATTS HANDLER
+
 static void gatts_handler(
     esp_gatts_cb_event_t event,
     esp_gatt_if_t gatts_if,
@@ -420,9 +395,8 @@ static void gatts_handler(
     }
 }
 
-/* =========================================================
- * SEND HELPERS
- * ========================================================= */
+// SEND HELPERS
+ 
 static void send_event_notification(uint8_t event_type)
 {
     uint8_t packet[6];
@@ -488,9 +462,8 @@ static void send_imu_notifications(void)
     }
 }
 
-/* =========================================================
- * BUTTON TASK
- * ========================================================= */
+// BUTTON TASK
+
 static void button_task(void *arg)
 {
     int last_level = 1;
@@ -531,9 +504,8 @@ static void button_task(void *arg)
     }
 }
 
-/* =========================================================
- * MAIN
- * ========================================================= */
+// MAIN
+ 
 void app_main(void)
 {
     esp_err_t err = nvs_flash_init();
