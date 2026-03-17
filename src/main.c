@@ -54,7 +54,6 @@ static uint8_t imu_uuid[16] = {
     0xDE,0xEF,0x12,0x12,0x32,0x15,0x00,0x00
 };
 
-/* Handles */
 static uint16_t service_handle    = 0;
 static uint16_t event_char_handle = 0;
 static uint16_t imu_char_handle   = 0;
@@ -63,8 +62,7 @@ static uint16_t imu_cccd_handle   = 0;
 
 static esp_gatt_if_t gatts_if_global = 0;
 static uint16_t conn_id_global = 0;
-
-/* State */
+//device states
 static bool device_connected = false;
 static bool event_notify_enabled = false;
 static bool imu_notify_enabled = false;
@@ -107,7 +105,7 @@ static esp_ble_adv_params_t adv_params = {
     .adv_filter_policy = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY
 };
 
-/* IMU CONFIG */
+
 #define SAMPLE_RATE_HZ          200
 #define SAMPLE_BYTES            12
 #define DURATION_SECONDS        2
@@ -248,7 +246,7 @@ static void add_imu_cccd(void)
     }
 }
 
-/* ================= GAP ================= */
+
 static void gap_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
     switch (event) {
